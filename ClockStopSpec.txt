@@ -1,0 +1,10 @@
+{"bie" : "ClockStop",
+"actor" : "EFSA",
+"step": "...",
+"elements" :[
+	{"name": "clockStopStart","type": "date"},
+	{"name": "clockStopEnd", "type": "date"},
+	{"name": "Notes", "type": "longString"},
+	{"name": "Links", "type": "longString"}
+   ]
+}

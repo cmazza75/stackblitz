@@ -1,0 +1,12 @@
+{"bie" : "PreSubmission Advice",
+"actor" : "EFSA",
+"step": "Submit PreSubmission Advice",
+"elements" :[
+	{"name":"ID", "type":"number", "len":15},    
+    {"name":"Title", "type":"string", "len":10},
+	{"name":"Description", "type":"longString", "len":10},    
+    {"name":"SubmissionDate", "type":"date", "len":10},
+	{"name":"DossierREF", "type":"list", "len":10},
+	{"name":"RequestType", "type":"combo", "len":10, "options" : ["aaaa","bbbb","cccc"]},	
+    {"name":"Request meeting", "type":"check", "len":10}
+]}

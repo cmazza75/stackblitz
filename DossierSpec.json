@@ -1,0 +1,87 @@
+{"bie" : "Application Admin DAta",
+"actor" : "EFSA",
+"step": "...",
+"elements" :[ {
+   "name": "Area_ID",
+   "type": "combo",
+   "options": ["Novel Food", "Traditional Food", "Enzimes"]
+ },
+ {"name": "Topic_ID",  "type": "reference"},
+ {"name": "ReceptionDate","type": "date"},
+ {
+   "name": "AcceptanceDate",
+   "type": "date"
+ },
+ {
+   "name": "AdoptionDate",
+   "type": "date"
+ },
+ {
+   "name": "PublishingDate",
+   "type": "date"
+ },
+ {
+   "name": "Status",
+   "type": "combo",
+   "options": ["Acceptance", "Drafting", "Working Group", "Finalization"]
+ },
+ {
+   "name": "SubPhase",
+   "type": "combo"
+ },
+ {
+   "name": "ClockStops",
+   "type": "reference",
+   "spec": "ClockStopSpec.json"
+ },
+ {
+   "name": "Studies",
+   "type": "reference"
+ },
+ {
+   "name": "PSA",
+   "type": "reference"
+ },
+ {
+   "name": "PublicConsultations",
+   "type": "reference"
+ },
+ {
+   "name": "Meetings",
+   "type": "reference"
+ },
+ {
+   "name": "Tasks",
+   "type": "reference"
+ },
+ {
+   "name": "ProtocolUsed",
+   "type": "longString"
+ },
+ {
+   "name": "QualityDimensions",
+   "type": "longString"
+ },
+ {
+   "name": "type",
+   "type": "combo",
+   "options": ["Application", "Generic Mandate"]
+ },
+ {
+   "name": "Applicant",
+   "type": "reference"
+ },
+ {
+   "name": "DAR",
+   "type": "reference"
+ },
+ {
+   "name": "RAR",
+   "type": "reference"
+ },
+ {
+   "name": "Panel",
+   "type": "combo",
+   "options": ["FEED", "NDA", "GMO"]
+ }
+]}

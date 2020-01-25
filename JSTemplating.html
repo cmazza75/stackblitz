@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <title>JavaScirpt templating</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   
+    <script src="./jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" href="./jquery-ui-1.12.1/jquery-ui.css">
+	<script src="./jquery-ui-1.12.1/jquery-ui.js"></script>
+  
+	<script>
+	$( document ).ready(function() {
+		console.log( "ready!" );
+		$.support.cors = true;
+		var jsonData = "", templateData = "";
+		readFile("spec.json", function(jsonDataP){
+			jsonData = jsonDataP; 
+			$('#json').append(jsonData)
+		});
+		readFile("FormTemplate.html", function(templateDataP){
+			templateData = templateDataP; 
+			$('#template').append(templateData)
+		});
+		//parse(templateData, jsonData);
+	});
+	
+	function readFile(fileName, callBack){
+		$.ajax({
+		  url: fileName,
+		  success: function( response, status ) {
+				console.log( "done!" + status +"\n" + response );
+				callBack(response);
+			},
+		  error: function(xhr,status,error){console.log( "error: " + status + " " + error);}
+		});
+	}
+	
+	function parse(){
+		var str = $('#template').text();
+		var matchStr = $('#matchStr').val();
+		$('#result').append("RESULT: " + str.match(matchStr));
+	}
+	</script>
+	
+</head>
+<body>
+	<div id="json">
+	</div>
+	<div id="template">
+	</div>
+	<input type="text" id="matchStr"/>
+	<input type="button" onclick="parse()"/>
+	<div id="result"></div>
+</body>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+    <title>Business Entity Form</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   
+    <link rel="stylesheet" href="./css/bootstrap.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <script src="./jquery-3.4.1.min.js"></script>
+    <script src="./underscore-min.js"></script>
+
+	<link rel="stylesheet" href="./jquery-ui-1.12.1/jquery-ui.css">
+	<script src="./jquery-ui-1.12.1/jquery-ui.js"></script>
+  
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+	$.support.cors = true;
+	loadSpec();
+});
+
+var dataModel;
+function loadSpec(){
+	var data;
+	$.ajax({
+	  dataType: "json",
+	  url: "dossierSpec.json",
+	  data: data,
+	  success: function( response, status ) {
+			console.log( "done!" + status +"\n" + response );
+			dataModel = response;
+			refresh(response);
+		},
+	  error: function(xhr,status,error){console.log( "error: " + status + " " + error);}
+	});
+	//$.getJSON("spec.json").done();
+}
+	
+function refresh(data){	
+	ht = "";
+	$('#header').append("<h1>"+data.step+"</h1>");
+	$('#header').append("<h2 align='right'>"+data.actor+"<img src='user.jpg' height=40 width=40></h2>");
+	var cont = $('#container');
+	ht = "<div class='container-fluid'><div class='row no-gutters'>";
+	for (ele in data.elements){
+		obj = data.elements[ele];
+		//ht = "<div class='form-group'>";
+		ht += "<div class='col-sm input-group-text m-1'>" + obj.name + "</div>";
+	}
+	ht += "<div class='col-sm input-group-text m-1'>Actions</div>";
+	ht += "</div>";
+	//ht+="</div><div class='row'>";
+	for (c=0;c<3;c++){
+		ht+="<div class='row no-gutters'>";
+		for (ele in data.elements){
+			obj = data.elements[ele];
+			ht += "<div class='col-sm m-1'>";
+			switch (obj.type){
+				case "number":
+					ht += "<input type='text' class='form-control' id='" + obj.name + "ID' />";
+					break;
+				case "string": 
+				case "longString":
+					ht += "<input type='text' class='form-control' id='"+ obj.name + "ID' size='"+obj.len+"'/>";
+					break;
+				case "date":
+					ht += "<input type='text' class='form-control datePicker' id='"+ obj.name +"ID' size='"+obj.len+"'/>";
+					break;
+				case "list":
+					ht += "<div class='input-group mb3'><input type='text' class='form-control' id='"+ obj.name +"ID' size='"+obj.len+"'/><input type='button' class='btn btn-outline-primary' value='...'/></div>";
+					break;
+				case "combo":
+					ops = "";
+					for (i in obj.options){
+						ops += "<option>"+obj.options[i]+"</option>";
+					}
+					ht += "<select id='"+ obj.name +"ID' lenght='"+obj.len+"' class='form-control'>" + ops + "</select>";
+					break;
+				case "check":
+					ht += "<input align=left type='checkbox' class='form-control' id='"+ obj.name +"ID'/>";
+					break;
+			}
+			ht += "</div>";
+		}
+		ht += "<div class='col-sm input-group'><input type='button' class='btn btn-outline-warning' value='-'/><input type='button' class='btn-outline-info' value='upd'/></div>";
+		ht += "</div>";
+	}
+	ht += "</div>";
+	cont.append(ht);
+	console.log(ht);
+	$('.datePicker').datepicker();
+};
+
+function save(){
+	for (ele in dataModel.elements){
+		obj = dataModel.elements[ele];
+		var dataToSave = {};
+		var fieldNanme = "#" + obj.Name + "ID";
+		dataToSave[obj.Name] = $(fieldName);
+	}
+	alert(dataToSave);
+}
+</script>
+</head>
+<body>
+    <div class="container-fluid">
+	<div data-role="page">
+ 
+        <div id="header">
+            
+        </div><!-- /header -->
+ 
+        <form id="container">
+		
+		</form>
+		
+		<p id="container11"></p>
+            
+        <div id="footer">
+            <h4 align=right> by CM</h4>
+        </div><!-- /footer -->
+ 
+    </div><!-- /page -->
+	
+	<input type="button" value="refresh" onclick="loadSpec()"></input>
+	<input type="button" value="save" onclick="saveData()"></input>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

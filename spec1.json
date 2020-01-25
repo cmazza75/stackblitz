@@ -1,0 +1,8 @@
+[
+	{"name":"Number", "type":"number", "len":15},    
+    {"name":"Text", "type":"string", "len":10},    
+    {"name":"Date", "type":"date", "len":10},
+	{"name":"List", "type":"list", "len":10},
+	{"name":"ComboBox", "type":"combo", "len":10, "options" : ["aaaa","bbbb","cccc"]},	
+    {"name":"CheckBox", "type":"check", "len":10}
+]

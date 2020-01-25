@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+<head>
+    <title>Business Entity Form</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   
+    <link rel="stylesheet" href="./css/bootstrap.css" crossorigin="anonymous">
+    
+    <script src="./jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" href="./jquery-ui-1.12.1/jquery-ui.css">
+	<script src="./jquery-ui-1.12.1/jquery-ui.js"></script>
+	<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/14082/FileSaver.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script>
+//"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --allow-file-access-from-files
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+	$.support.cors = true;
+	loadSpec();
+});
+var dataModel = {};
+var dataSet = [];
+var index=0;
+var numrec=0;
+
+function loadSpec(){
+	var data;
+	$.ajax({
+	  dataType: "json",
+	  url: "DossierSpec.json",
+	  data: data,
+	  success: function( response, status ) {
+			console.log( "done!" + status +"\n" + response );
+			dataModel = response;
+			refresh(response, $('#header'), $('#container'));
+		},
+	  error: function(xhr,status,error){console.log( "error: " + status + " " + error);}
+	});
+}
+
+function loadSpecModal(specFile){
+	var data;
+	$.ajax({
+	  dataType: "json",
+	  url: specFile,
+	  data: data,
+	  success: function( response, status ) {
+			console.log( "done!" + status +"\n" + response );
+			//subDataModel = response;
+			refresh(response, $('#modalHeader'),$('#modalContainer'));
+			$("#myModal").modal();
+		},
+	  error: function(xhr,status,error){console.log( "error: " + status + " " + error);}
+	});
+}
+	
+function refresh(data, header, container){	
+	ht = "";
+	header.append("<h1>"+data.step+"</h1>").
+			append("<h2 align='right'>"+data.actor+"<img src='user.jpg' height=40 width=40></h2>");
+	
+	for (ele in data.elements){
+		
+		obj = data.elements[ele];
+		ht = "<div class='input-group mb-3'>";
+		ht += '<label for="' + obj.name + 'ID" class="input-group-text">'+ obj.name +'</label>'
+		switch (obj.type){
+			case "number":
+				ht += "<input type='text' class='form-control' id='"+ obj.name +"ID' />";
+				break;
+			case "string":
+				ht += "<input type='text' class='form-control' id='"+ obj.name +"ID' size='"+obj.len+"'/>";
+				break;
+			case "longString":
+				ht += "<textarea class='form-control' id='"+ obj.name +"ID' size='"+obj.len+"'>aaa</textarea>";
+				break;
+			case "date":
+				ht += "<input type='text' class='form-control datePicker' id='"+ obj.name +"ID' size='"+obj.len+"'/>";
+				break;
+			case "reference":
+				ht += "<input type='text' class='form-control' id='"+ obj.name +"ID' size='"+obj.len+
+					"'/><input type='button' value='...' onclick='loadSpecModal(\"" + obj.spec + "\")' />";
+				break;
+			case "combo":
+				ops = "";
+				for (i in obj.options){
+					ops += "<option>"+obj.options[i]+"</option>";
+				}
+				ht += "<select id='"+ obj.name +"ID' lenght='"+obj.len+"' class='form-control'>" + ops + "</select>";
+				break;
+			case "check":
+				ht += "<input align=left type='checkbox' class='form-control mb3' id='"+ obj.name +"ID'/>";
+				break;
+		}
+		$('.datePicker').datepicker();
+		ht += "</div>";
+		container.append(ht);
+	}
+	init();
+};
+function saveData(){
+	navigator.webkitPersistentStorage.requestQuota(1024*1024, function() {
+		window.webkitRequestFileSystem(window.PERSISTENT , 1024*1024, SaveDatFileBro);
+	});
+}
+
+function showRecord(index){
+	nextRecord = dataSet[index];
+	for (ele in dataModel.elements){
+		obj = dataModel.elements[ele];
+		var fieldName = "#" + obj.name + "ID";
+		$(fieldName).val(nextRecord[obj.name]);
+	}
+	$("#index").val(index+1);
+}
+
+function updateRecord(index){
+	record = {};
+	for (ele in dataModel.elements){
+		obj = dataModel.elements[ele];
+		var fieldName = "#" + obj.name + "ID";
+		record[obj.name] = $(fieldName).val();
+	}
+	dataSet[index] = record;
+}
+
+function next(){
+	if (index+1 == numrec) {alert("end of records"); return;}
+	updateRecord(index);
+	index++;
+	showRecord(index);
+}
+
+function prev(){
+	if (index == 0) {alert("first record " + index); return;}
+	updateRecord(index);
+	index--;
+	showRecord(index);
+}
+
+function init(){
+	index = 0;
+	numrec = 1;
+	updateRecord(index);
+}
+
+function add(){
+	updateRecord(index);
+	index = numrec;
+	numrec++;
+	
+	newRecord = {};
+	for (ele in dataModel.elements){
+		obj = dataModel.elements[ele];
+		var fieldName = "#" + obj.name + "ID";
+		newRecord[obj.name] = "";
+	}
+	dataSet[index] = newRecord;
+	showRecord(index);
+	alert(JSON.stringify(dataSet));
+}
+
+function writeFile(localstorage){
+	localstorage.root.getFile("Data1.json", {create: true}, function(DatFile) {
+	DatFile.createWriter(function(fileWriter){
+		fileWriter.onwrite = function(e) {
+			console.log('Write completed.');
+		};
+
+		fileWriter.onerror = function(e) {
+			console.log('Write failed: ' + e.toString());
+		};
+		console.log(JSON.stringify(dataSet));
+		var blob = new Blob([JSON.stringify(dataSet)], {type: "text/plain"});
+		fileWriter.write(blob);
+	}, onError);
+	}, onError);
+}
+
+function SaveDatFileBro(localstorage) {
+  localstorage.root.getFile("Data1.json", {create: true}, function(DatFile) {
+	if (DatFile.isFile){
+		DatFile.remove(function(){
+			console.log('File removed.');
+			writeFile(localstorage);
+		}, onError);
+	}else
+		writeFile(localstorage);
+	
+	}, onError);
+}
+
+function loadData(){
+	navigator.webkitPersistentStorage.requestQuota(1024*1024, function() {
+		window.webkitRequestFileSystem(window.PERSISTENT , 1024*1024, LoadDatFileBro);
+	});
+}
+
+function LoadDatFileBro(localstorage) {
+
+	localstorage.root.getFile('Data1.json', {}, function(fileEntry) {
+
+    // Obtain the File object representing the FileEntry.
+    // Use FileReader to read its contents.
+    fileEntry.file(function(file) {
+       var reader = new FileReader();
+
+       reader.onload = function(e) {
+			console.log(e.target.result);
+			dataSet = JSON.parse(e.target.result);
+			numrec = dataSet.length;
+			//if (!numrec) numrec = 1;
+			console.log("number of records:" + numrec);
+			index=0;
+			//updateRecord(index);
+			showRecord(index);
+       };
+       reader.readAsText(file); // Read the file as plaintext.
+    }, onError);
+
+  }, onError);
+}
+
+function onError(err){console.log(err);}
+
+</script>
+</head>
+<body>
+    <div class="container">
+	<div data-role="page">
+ 
+        <div id="header"></div>
+ 
+        <form id="container"></form>
+		
+		   
+        <div id="footer">
+            <h4 align=right> by CM</h4>
+        </div><!-- /footer -->
+ 
+    </div><!-- /page -->
+	<div class="modal fade" id="myModal" role="dialog">	
+	<div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+		<div id="modalHeader" class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+		</div> 
+		<div class="modal-body">
+			<form id="modalContainer"></form>
+		</div>
+		<div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+	</div>
+	</div>
+	</div>
+	
+	<input type="button" value="refresh" onclick="loadSpec()"></input>
+	<input type="button" value="save" onclick="saveData()"></input>
+	<input type="button" value="load" onclick="loadData()"></input>
+	<input type="button" value="add" onclick="add()"></input>
+	<input type="button" value="prev" onclick="prev()"></input>
+	<input type="text" value="1" id="index"></input>
+	<input type="button" value="next" onclick="next()"></input>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

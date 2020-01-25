@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+    <title>Business Entity Form</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <script src="./jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" href="./jquery-ui-1.12.1/jquery-ui.css">
+	<script src="./jquery-ui-1.12.1/jquery-ui.js"></script>
+  
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+	$.support.cors = true;
+	loadSpec();
+});
+
+function loadSpec(){
+	var data;
+	$.ajax({
+	  dataType: "json",
+	  url: "spec.json",
+	  data: data,
+	  success: function( response, status ) {
+			console.log( "done!" + status +"\n" + response );
+			refresh(response);
+		},
+	  error: function(xhr,status,error){console.log( "error: " + status + " " + error);}
+	});
+	//$.getJSON("spec.json").done();
+}
+	
+function refresh(elements){	
+	/*var elements = [
+	{"name":"Number", "type":"number", "len":15},    
+    {"name":"Text", "type":"string", "len":10},    
+    {"name":"Date", "type":"date", "len":10},
+	{"name":"List", "type":"list", "len":10},
+	{"name":"ComboBox", "type":"combo", "len":10, "options" : ["aaaa","bbbb","cccc"]},	
+    {"name":"CheckBox", "type":"check", "len":10}
+];*/
+	ht = "";
+	var cont = $('#container');
+	for (ele in elements){
+		
+		obj = elements[ele];
+		ht = "<tr><td>" + obj.name + "</td>";
+		switch (obj.type){
+			case "number":
+				ht += "<td><input type='text' size='"+obj.len+"'/></td>";
+				break;
+			case "string":
+				ht += "<td><input type='text' lenght='"+obj.len+"'/></td>";
+				break;
+			case "date":
+				ht += "<td><input type='text' class='datePicker' lenght='"+obj.len+"'/><input type='button' value='...'/></td>";
+				break;
+			case "list":
+				ht += "<td><input type='text' lenght='"+obj.len+"'/><input type='button' value='...'/></td>";
+				break;
+			case "combo":
+				ops = "";
+				for (i in obj.options){
+					ops += "<option>"+obj.options[i]+"</option>";
+				}
+				ht += "<td><select lenght='"+obj.len+"'>" + ops + "</select></td>";
+				break;
+			case "check":
+				ht += "<td><input type='checkbox''/></td>";
+				break;
+		}
+		$('.datePicker').datepicker();
+		ht += "</tr>";
+		cont.append(ht);
+		}
+};
+</script>
+</head>
+<body>
+ <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <div data-role="page">
+ 
+        <div id="header">
+            <h1>Business Entity</h1>
+        </div><!-- /header -->
+ 
+        <table id="container" border="1">
+		
+		</table>
+		
+		<p id="container11"></p>
+            
+        <div id="footer">
+            <h4 align=right> by CM</h4>
+        </div><!-- /footer -->
+ 
+    </div><!-- /page -->
+	<input type="button" value="refresh" onclick="refresh()"></input>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<body>
+    <div class="container">
+	<div data-role="page"> 
+        <div id="header">
+			<h1>{{data.step}}</h1>
+			<h2 align="right">{{data.actor}}<img src="user.jpg" height=40 width=40></h2>
+        </div>
+ 
+        <form id="container">
+			{{#items}}
+			<div class="input-group mb-3">
+				<label for="{{name}}" class="input-group-text">{{name}}</label>
+				<input type="text" class="form-control" id="{{name}}ID"/>
+			</div>
+			{{/items}}
+		</form>    
+        <div id="footer">
+            <h4 align=right> by CM</h4>
+        </div> 
+    </div>
+	<input type="button" value="refresh" onclick="refresh()"></input>
+	</div>
+</body>
